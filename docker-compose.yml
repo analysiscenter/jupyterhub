@@ -1,0 +1,50 @@
+# JupyterHub docker-compose configuration file
+version: "2"
+
+services:
+  hub:
+    build:
+      context: ./build
+      dockerfile: Dockerfile.hub
+    image: ${HUB_DOCKER_IMAGE}
+    container_name: ${HUB_CONTAINER_NAME}
+    volumes:
+      # Bind Docker socket on the host so we can connect to the daemon from within the container
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      # Bind Docker volume on host for JupyterHub config
+      - "${HOST_JUPYTERHUB_DIR}/config:${HUB_JUPYTERHUB_DIR}/config"
+      # Bind Docker volume on host for JupyterHub database and cookie secrets
+      - "${HOST_JUPYTERHUB_DIR}/data:${HUB_JUPYTERHUB_DIR}/data"
+      # Bind Docker volume on host for JupyterHub SSL secrets
+      - "${HOST_JUPYTERHUB_DIR}/secret:${HUB_JUPYTERHUB_DIR}/secret"
+    ports:
+      - "8000:80"
+    environment:
+      JUPYTERHUB_CONFIG_DIR: ${HUB_JUPYTERHUB_DIR}/config
+      JUPYTERHUB_DATA_DIR: ${HUB_JUPYTERHUB_DIR}/data
+      JUPYTERHUB_SSL_KEY: ${HUB_JUPYTERHUB_DIR}/secret/${JUPYTERHUB_SSL_KEY}
+      JUPYTERHUB_SSL_CERT: ${HUB_JUPYTERHUB_DIR}/secret/${JUPYTERHUB_SSL_CERT}
+      # All containers will join this network
+      HUB_NETWORK_NAME: ${HUB_NETWORK_NAME}
+      # JupyterHub will spawn this Notebook image for users
+      NOTEBOOK_DOCKER_IMAGE: ${NOTEBOOK_DOCKER_IMAGE}
+      # Using this run command (optional)
+      NOTEBOOK_SPAWN_CMD: ${NOTEBOOK_SPAWN_CMD}
+      # Notebook directory inside Notebook image
+      NOTEBOOK_DIR: ${NOTEBOOK_DIR}
+      HOST_NOTEBOOK_DIR: ${HOST_NOTEBOOK_DIR}
+      HOST_NOTEBOOK_CONFIG: ${HOST_JUPYTERHUB_DIR}/notebook_config
+      HOST_NOTEBOOK_SECRET: ${HOST_JUPYTERHUB_DIR}/notebook_secret
+      NVIDIA_DRIVER_NAME: ${NVIDIA_DRIVER_NAME}
+      # Required to authenticate users using Google OAuth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      OAUTH_CALLBACK_URL: ${OAUTH_CALLBACK_URL}
+    command: >
+      jupyterhub -f ${JUPYTERHUB_CONFIG_DIR}/jupyterhub_config.py
+
+
+networks:
+  default:
+    external:
+      name: ${HUB_NETWORK_NAME}

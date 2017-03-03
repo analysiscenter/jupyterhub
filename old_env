@@ -1,0 +1,35 @@
+HUB_CONTAINER_NAME=jupyterhub
+HUB_NETWORK_NAME=jupyterhub-network
+
+
+NOTEBOOK_DOCKER_IMAGE=analysiscenter1/ds-py3:gpu
+NOTEBOOK_SPAWN_CMD=start-singleuser.sh
+
+# Path for notebooks within a notebook container
+NOTEBOOK_DIR=/notebooks
+# Path for notebooks within a host
+HOST_NOTEBOOK_DIR=/jupyterhub/notebooks
+HOST_NOTEBOOK_CONFIG=/jupyterhub/notebook_config
+HOST_NOTEBOOK_SERET=/jupyterhub/notebook_secret
+
+
+# Path for hub config within a hub container
+JUPYTERHUB_CONFIG_DIR=/jupyterhub/config
+# Path for hub data within a hub container
+JUPYTERHUB_DATA_DIR=/jupyterhub/data
+
+
+# Path for TLS key and cert within a hub container
+JUPYTERHUB_SECRET_DIR=/jupyterhub/secret
+JUPYTERHUB_SSL_CERT=/jupyterhub/secret/fullchain1.pem
+JUPYTERHUB_SSL_KEY=/jupyterhub/secret/privkey1.pem
+
+
+# Volume name for NVidia GPU
+NVIDIA_DRIVER_NAME=nvidia_driver_375.26
+
+
+# OAuth info
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+OAUTH_CALLBACK_URL=

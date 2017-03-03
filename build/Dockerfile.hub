@@ -1,0 +1,32 @@
+FROM ubuntu:16.04
+MAINTAINER Roman Kh <rhudor@gmail.com>
+
+# installing system packages
+RUN apt-get update && \
+    apt-get install -y pkg-config build-essential \
+    libzmq-dev \
+    git wget tmux nano
+
+#installing NodeJS
+RUN apt-get install -y npm nodejs-legacy && \
+    npm install -g configurable-http-proxy
+
+# installing python packages
+RUN apt-get install -y python3-pip python3-dev && \
+    pip3 install --upgrade pip && \
+    pip3 install --upgrade setuptools
+
+# installing docker
+RUN wget https://get.docker.com -q -O /tmp/getdocker && \
+    chmod +x /tmp/getdocker && \
+    sh /tmp/getdocker
+
+# installing jupyterhub
+RUN pip3 install jupyterhub && \
+    pip3 install oauthenticator && \
+    pip3 install dockerspawner
+
+WORKDIR /jupyterhub
+ONBUILD COPY jupyterhub_config.py /jupyterhub/jupyterhub_config.py
+
+CMD ["jupyterhub", "-f", "/jupyterhub/jupyterhub_config.py"]

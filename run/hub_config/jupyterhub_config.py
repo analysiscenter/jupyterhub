@@ -13,15 +13,15 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 c.DockerSpawner.extra_host_config.update({ 'network_mode': network_name })
 
-host_notebook_dir = os.environ.get('HOST_NOTEBOOK_DIR')
+hub_notebook_dir = os.environ.get('HOST_NOTEBOOK_DIR')
 notebook_dir = os.environ.get('NOTEBOOK_DIR', '/notebooks')
 c.DockerSpawner.notebook_dir = notebook_dir
-c.DockerSpawner.volumes.update({ host_notebook_dir : notebook_dir })
-host_notebook_config = os.environ.get('HOST_NOTEBOOK_CONFIG')
-host_notebook_secret = os.environ.get('HOST_NOTEBOOK_SECRET')
-c.DockerSpawner.volumes.update({ host_notebook_config  : '/jupyter/config' })
-c.DockerSpawner.volumes.update({ host_notebooks_secret : '/jupyter/secret' })
-c.DockerSpawner.volumes.update({ '/var/run/docker.sock': '/var/run/docker.sock' })
+c.DockerSpawner.volumes.update({ hub_notebook_dir : notebook_dir })
+c.DockerSpawner.volumes.update({'/data' : '/data'})
+notebook_config = os.environ.get('NOTEBOOK_CONFIG')
+c.DockerSpawner.volumes.update({ notebook_config : '/jupyter/config' })
+notebook_secret = os.environ.get('NOTEBOOK_SECRET')
+c.DockerSpawner.volumes.update({ notebook_secret : '/jupyter/secret' })
 c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
 
 c.DockerSpawner.remove_containers = True
@@ -48,7 +48,7 @@ c.GoogleOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
 
 
 # Persist hub data on volume mounted inside container
-data_dir = os.environ.get('JUPYTERHUB_DATA_DIR', '/jupyterhub/data')
+data_dir = os.environ.get('JUPYTERHUB_DATA_DIR', '/srv/jupyterhub/data')
 c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, 'jupyterhub_cookie_secret')
 

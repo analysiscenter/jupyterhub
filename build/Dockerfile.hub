@@ -1,11 +1,12 @@
 FROM ubuntu:16.04
 MAINTAINER Roman Kh <rhudor@gmail.com>
 
+ENV REBUILD 1
 # installing system packages
 RUN apt-get update && \
     apt-get install -y pkg-config build-essential \
     libzmq-dev \
-    git wget tmux nano
+    git wget
 
 #installing NodeJS
 RUN apt-get install -y npm nodejs-legacy && \
@@ -26,7 +27,7 @@ RUN pip3 install jupyterhub && \
     pip3 install oauthenticator && \
     pip3 install dockerspawner
 
-WORKDIR /jupyterhub
-ONBUILD COPY jupyterhub_config.py /jupyterhub/jupyterhub_config.py
+WORKDIR /srv/jupyterhub
+ONBUILD COPY jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
 
-CMD ["jupyterhub", "-f", "/jupyterhub/jupyterhub_config.py"]
+CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
